@@ -1,45 +1,48 @@
 import React from 'react';
 
 interface Expense {
+    _id: string;
     category: string;
     subcategory: string;
     amount: number;
+    date?: string; // Pode ser opcional se não usar data
 }
 
 interface ExpenseListProps {
     expenses: Expense[];
     onEdit: (expense: Expense) => void;
-    onDelete: (index: number) => void;
+    onDelete: (id: string) => void;
 }
 
 const ExpenseList: React.FC<ExpenseListProps> = ({ expenses, onEdit, onDelete }) => {
-    const total = expenses.reduce((acc, expense) => acc + expense.amount, 0);
-
     return (
-        <div>
-            <ul className="list-disc pl-5">
-                {expenses.map((expense, index) => (
-                    <li key={index} className="flex justify-between mb-2">
-                        <span>{expense.category} - {expense.subcategory}: R$ {expense.amount.toFixed(2)}</span>
+        <ul className="list-disc pl-5">
+            {expenses.map((expense) => (
+                <li key={expense._id} className="mb-3">
+                    <div className="flex justify-between items-center">
+                        <div>
+                            <div><strong>Categoria:</strong> {expense.category}</div>
+                            <div><strong>Subcategoria:</strong> {expense.subcategory}</div>
+                            <div><strong>Valor:</strong> ${expense.amount.toFixed(2)}</div>
+                        </div>
                         <div>
                             <button
                                 onClick={() => onEdit(expense)}
-                                className="bg-blue-500 text-white p-1 rounded mr-2"
+                                className="bg-blue-500 text-white px-3 py-1 rounded mr-2"
                             >
                                 Editar
                             </button>
                             <button
-                                onClick={() => onDelete(index)}
-                                className="bg-red-500 text-white p-1 rounded"
+                                onClick={() => onDelete(expense._id)}
+                                className="bg-red-500 text-white px-3 py-1 rounded"
                             >
-                                Excluir
+                                Deletar
                             </button>
                         </div>
-                    </li>
-                ))}
-            </ul>
-            <div className="mt-4 font-bold">Total: R$ {total.toFixed(2)}</div>
-        </div>
+                    </div>
+                </li>
+            ))}
+        </ul>
     );
 };
 

@@ -8,19 +8,19 @@ router.get('/', async (req, res) => {
         const expenses = await ExpenseModel.find();
         res.json(expenses);
     } catch (error) {
-        res.status(500).json({ error: 'Erro ao buscar despesas.' });
+        res.status(500).json({ message: 'Error fetching expenses' });
     }
 });
 
 router.post('/', async (req, res) => {
-    const { category, amount } = req.body;
+    const { category, subcategory, amount } = req.body;
 
-    if (!category || !amount) {
+    if (!category || !subcategory || amount === undefined) {
         return res.status(400).json({ error: 'Preencha todos os campos.' });
     }
 
     try {
-        const newExpense = new ExpenseModel({ category, amount });
+        const newExpense = new ExpenseModel({ category, subcategory, amount });
         await newExpense.save();
         res.status(201).json(newExpense);
     } catch (error) {
@@ -28,13 +28,24 @@ router.post('/', async (req, res) => {
     }
 });
 
-router.delete('/:id', async (req, res) => {
+router.put('/:id', async (req, res) => {
+    const { id } = req.params;
+    const { category, subcategory, amount } = req.body;
     try {
-        const { id } = req.params;
-        await ExpenseModel.findByIdAndDelete(id);
-        res.status(204).send();
+        const updatedExpense = await ExpenseModel.findByIdAndUpdate(id, { category, subcategory, amount }, { new: true });
+        res.json(updatedExpense);
     } catch (error) {
-        res.status(500).json({ error: 'Erro ao deletar despesa.' });
+        res.status(500).json({ message: 'Error updating expense' });
+    }
+});
+
+router.delete('/:id', async (req, res) => {
+    const { id } = req.params;
+    try {
+        await ExpenseModel.findByIdAndDelete(id);
+        res.json({ message: 'Expense deleted' });
+    } catch (error) {
+        res.status(500).json({ message: 'Error deleting expense' });
     }
 });
 

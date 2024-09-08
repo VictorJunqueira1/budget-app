@@ -1,65 +1,80 @@
-import React, { useState, FormEvent, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
+
+interface Expense {
+    _id?: string;
+    category: string;
+    subcategory: string;
+    amount: number;
+}
 
 interface ExpenseFormProps {
-    onSubmit: (expense: { category: string; subcategory: string; amount: number }) => void;
-    editExpense: { category: string; subcategory: string; amount: number } | null;
+    onSubmit: (expense: Omit<Expense, '_id' | 'date'>) => void;
+    editExpense: Expense | null;
 }
 
 const ExpenseForm: React.FC<ExpenseFormProps> = ({ onSubmit, editExpense }) => {
     const [category, setCategory] = useState('');
     const [subcategory, setSubcategory] = useState('');
-    const [amount, setAmount] = useState('');
+    const [amount, setAmount] = useState(0);
 
     useEffect(() => {
         if (editExpense) {
             setCategory(editExpense.category);
             setSubcategory(editExpense.subcategory);
-            setAmount(editExpense.amount.toString());
-        } else {
-            setCategory('');
-            setSubcategory('');
-            setAmount('');
+            setAmount(editExpense.amount);
         }
     }, [editExpense]);
 
-    const handleSubmit = (e: FormEvent) => {
+    const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        if (category && subcategory && amount) {
-            onSubmit({ category, subcategory, amount: Number(amount) });
-            setCategory('');
-            setSubcategory('');
-            setAmount('');
-        }
+
+        const expense = { category, subcategory, amount };
+
+        onSubmit(expense);
+
+        setCategory('');
+        setSubcategory('');
+        setAmount(0);
     };
 
     return (
         <form onSubmit={handleSubmit} className="mb-6">
-            <div className="flex flex-col space-y-4">
+            <div className="mb-4">
+                <label className="block text-gray-700">Categoria</label>
                 <input
                     type="text"
                     value={category}
                     onChange={(e) => setCategory(e.target.value)}
-                    placeholder="Categoria"
-                    className="p-2 border border-gray-300 rounded"
+                    className="w-full px-3 py-2 border border-gray-300 rounded"
+                    required
                 />
+            </div>
+            <div className="mb-4">
+                <label className="block text-gray-700">Subcategoria</label>
                 <input
                     type="text"
                     value={subcategory}
                     onChange={(e) => setSubcategory(e.target.value)}
-                    placeholder="Subcategoria"
-                    className="p-2 border border-gray-300 rounded"
+                    className="w-full px-3 py-2 border border-gray-300 rounded"
+                    required
                 />
+            </div>
+            <div className="mb-4">
+                <label className="block text-gray-700">Valor</label>
                 <input
                     type="number"
                     value={amount}
-                    onChange={(e) => setAmount(e.target.value)}
-                    placeholder="Valor"
-                    className="p-2 border border-gray-300 rounded"
+                    onChange={(e) => setAmount(Number(e.target.value))}
+                    className="w-full px-3 py-2 border border-gray-300 rounded"
+                    required
                 />
-                <button type="submit" className="bg-blue-500 text-white p-2 rounded">
-                    {editExpense ? 'Atualizar' : 'Adicionar'}
-                </button>
             </div>
+            <button
+                type="submit"
+                className="w-full bg-blue-500 text-white py-2 px-4 rounded"
+            >
+                {editExpense ? 'Atualizar Despesa' : 'Adicionar Despesa'}
+            </button>
         </form>
     );
 };
