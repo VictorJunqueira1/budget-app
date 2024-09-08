@@ -1,15 +1,21 @@
+import React, { useState } from 'react';
 import ExpenseForm from '@/components/ExpenseForm';
 import ExpenseList from '@/components/ExpenseList';
-import { useState } from 'react';
 
-const App = () => {
-    const [expenses, setExpenses] = useState<{ category: string; amount: number }[]>([]);
-    const [editingExpense, setEditingExpense] = useState<{ category: string; amount: number } | null>(null);
+interface Expense {
+    category: string;
+    subcategory: string;
+    amount: number;
+}
 
-    const handleAddExpense = (expense: { category: string; amount: number }) => {
+const Index: React.FC = () => {
+    const [expenses, setExpenses] = useState<Expense[]>([]);
+    const [editingExpense, setEditingExpense] = useState<Expense | null>(null);
+
+    const handleAddExpense = (expense: Expense) => {
         if (editingExpense) {
             setExpenses(expenses.map(e =>
-                e.category === editingExpense.category && e.amount === editingExpense.amount
+                e.category === editingExpense.category && e.subcategory === editingExpense.subcategory && e.amount === editingExpense.amount
                     ? expense
                     : e
             ));
@@ -19,7 +25,7 @@ const App = () => {
         }
     };
 
-    const handleEditExpense = (expense: { category: string; amount: number }) => {
+    const handleEditExpense = (expense: Expense) => {
         setEditingExpense(expense);
     };
 
@@ -29,7 +35,7 @@ const App = () => {
 
     return (
         <div className="min-h-screen bg-gray-100 p-8">
-            <div className="max-w-4xl mx-auto bg-white p-6 rounded-lg shadow-lg">
+            <div className="max-w-xl mx-auto bg-white p-6 rounded-lg shadow-lg">
                 <h1 className="text-3xl font-bold mb-6 text-gray-800 text-center">Gerenciador de Despesas</h1>
                 <ExpenseForm onSubmit={handleAddExpense} editExpense={editingExpense} />
                 <ExpenseList
@@ -42,4 +48,4 @@ const App = () => {
     );
 };
 
-export default App;
+export default Index;

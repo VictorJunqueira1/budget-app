@@ -1,53 +1,65 @@
-import { useState, useEffect } from 'react';
+import React, { useState, FormEvent, useEffect } from 'react';
 
-type ExpenseFormProps = {
-    onSubmit: (expense: { category: string; amount: number }) => void;
-    editExpense?: { category: string; amount: number } | null; // Permitir edição
-};
+interface ExpenseFormProps {
+    onSubmit: (expense: { category: string; subcategory: string; amount: number }) => void;
+    editExpense: { category: string; subcategory: string; amount: number } | null;
+}
 
-const ExpenseForm = ({ onSubmit, editExpense }: ExpenseFormProps) => {
-    const [category, setCategory] = useState<string>('');
-    const [amount, setAmount] = useState<number>(0);
+const ExpenseForm: React.FC<ExpenseFormProps> = ({ onSubmit, editExpense }) => {
+    const [category, setCategory] = useState('');
+    const [subcategory, setSubcategory] = useState('');
+    const [amount, setAmount] = useState('');
 
     useEffect(() => {
         if (editExpense) {
             setCategory(editExpense.category);
-            setAmount(editExpense.amount);
+            setSubcategory(editExpense.subcategory);
+            setAmount(editExpense.amount.toString());
         } else {
             setCategory('');
-            setAmount(0);
+            setSubcategory('');
+            setAmount('');
         }
     }, [editExpense]);
 
-    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    const handleSubmit = (e: FormEvent) => {
         e.preventDefault();
-        onSubmit({ category, amount });
-        setCategory('');
-        setAmount(0);
+        if (category && subcategory && amount) {
+            onSubmit({ category, subcategory, amount: Number(amount) });
+            setCategory('');
+            setSubcategory('');
+            setAmount('');
+        }
     };
 
     return (
-        <form onSubmit={handleSubmit} className="bg-white p-8 rounded-lg shadow-md mb-6">
-            <h2 className="text-2xl font-semibold mb-4 text-gray-800">
-                {editExpense ? 'Editar Despesa' : 'Adicionar Despesa'}
-            </h2>
-            <input
-                type="text"
-                placeholder="Categoria"
-                value={category}
-                onChange={(e) => setCategory(e.target.value)}
-                className="mb-4 p-3 border border-gray-300 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-            <input
-                type="number"
-                placeholder="Valor"
-                value={amount}
-                onChange={(e) => setAmount(Number(e.target.value))}
-                className="mb-4 p-3 border border-gray-300 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-            <button type="submit" className="bg-blue-500 text-white p-3 rounded-lg hover:bg-blue-600 transition duration-200">
-                {editExpense ? 'Atualizar' : 'Adicionar'}
-            </button>
+        <form onSubmit={handleSubmit} className="mb-6">
+            <div className="flex flex-col space-y-4">
+                <input
+                    type="text"
+                    value={category}
+                    onChange={(e) => setCategory(e.target.value)}
+                    placeholder="Categoria"
+                    className="p-2 border border-gray-300 rounded"
+                />
+                <input
+                    type="text"
+                    value={subcategory}
+                    onChange={(e) => setSubcategory(e.target.value)}
+                    placeholder="Subcategoria"
+                    className="p-2 border border-gray-300 rounded"
+                />
+                <input
+                    type="number"
+                    value={amount}
+                    onChange={(e) => setAmount(e.target.value)}
+                    placeholder="Valor"
+                    className="p-2 border border-gray-300 rounded"
+                />
+                <button type="submit" className="bg-blue-500 text-white p-2 rounded">
+                    {editExpense ? 'Atualizar' : 'Adicionar'}
+                </button>
+            </div>
         </form>
     );
 };
