@@ -24,8 +24,8 @@ import {
 
 const components = [
     { title: "Início", href: "/", description: "Volte ao início da página." },
-    { title: "Categorias", href: "/categories", description: "Confira as categorias." },
-    { title: "Gráficos", href: "/graphics", description: "Confira gráficos." },
+    { title: "Gerenciar categorias", href: "/categories", description: "Veja, exclua e edite as categorias." },
+    { title: "Gráficos", href: "/graphics", description: "Acompanhe como tem sido seus gastos em gráficos." },
 ]
 
 export const NavigationMenuMain = () => {

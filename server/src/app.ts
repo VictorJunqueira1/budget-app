@@ -1,6 +1,6 @@
 import express from 'express';
 import cors from 'cors';
-import expenseRoutes from './routes/expense';
+import categoryRoutes from './routes/category';
 
 const app = express();
 
@@ -9,6 +9,6 @@ app.use(cors());
 app.use(express.json());
 
 // Routes
-app.use('/expenses', expenseRoutes);
+app.use('/categories', categoryRoutes);
 
 export default app;
