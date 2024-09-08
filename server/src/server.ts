@@ -16,6 +16,9 @@ app.get('/categories', (req: Request, res: Response) => {
 // Rota para adicionar ou editar categorias
 app.post('/categories', (req: Request, res: Response) => {
     const { name } = req.body;
+
+    console.log('Corpo da requisição POST:', req.body);
+
     if (!name) {
         return res.status(400).json({ error: 'O nome da categoria é obrigatório.' });
     }
@@ -26,27 +29,10 @@ app.post('/categories', (req: Request, res: Response) => {
     res.json({ name });
 });
 
-app.put('/categories/:name', (req: Request, res: Response) => {
-    const { name } = req.params;
-    const { newName } = req.body;
-
-    if (!newName || !name) {
-        return res.status(400).json({ error: 'Nome da categoria inválido.' });
-    }
-
-    const index = categories.indexOf(name);
-    if (index !== -1) {
-        categories[index] = newName;
-        res.json({ name: newName });
-    } else {
-        res.status(404).json({ error: 'Categoria não encontrada.' });
-    }
-});
-
 // Rota para editar categorias
 app.put('/categories/:name', (req: Request, res: Response) => {
     const { name } = req.params;
-    const { newName } = req.body;  // Certifique-se de que o campo enviado é 'newName'
+    const { newName } = req.body;
 
     if (!newName || !name) {
         return res.status(400).json({ error: 'Nome da categoria inválido.' });

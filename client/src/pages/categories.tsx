@@ -40,12 +40,16 @@ const Categories: React.FC = () => {
                 ? `http://localhost:5000/categories/${encodeURIComponent(editingCategory)}`
                 : 'http://localhost:5000/categories';
 
+            const body = editingCategory
+                ? JSON.stringify({ newName: newCategory }) // Enviando novo nome para PUT
+                : JSON.stringify({ name: newCategory });
+
             const response = await fetch(endpoint, {
                 method,
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ name: newCategory }), // Envia a chave correta
+                body,
             });
 
             if (!response.ok) {
@@ -59,7 +63,6 @@ const Categories: React.FC = () => {
             fetchCategories();
             alert('Categoria salva com sucesso!');
         } catch (error) {
-            // Verifica se o erro é uma instância de Error
             if (error instanceof Error) {
                 setError(error.message || 'Erro ao adicionar/editar a categoria.');
             } else {
