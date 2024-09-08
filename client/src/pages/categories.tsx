@@ -17,9 +17,10 @@ const Categories: React.FC = () => {
             const response = await fetch('http://localhost:5000/categories');
             if (!response.ok) throw new Error('Erro ao buscar categorias.');
             const data = await response.json();
-            setCategories(data.map((cat: { name: string }) => cat.name));
+            setCategories(data);
         } catch (error) {
             console.error('Erro ao buscar categorias:', error);
+            setError('Erro ao buscar categorias.');
         } finally {
             setLoading(false);
         }
@@ -44,10 +45,13 @@ const Categories: React.FC = () => {
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ name: newCategory }),
+                body: JSON.stringify({ name: newCategory }), // Envia a chave correta
             });
 
-            if (!response.ok) throw new Error('Erro ao adicionar/editar a categoria.');
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.error || 'Erro ao adicionar/editar a categoria.');
+            }
 
             setNewCategory('');
             setEditingCategory(null);
@@ -55,7 +59,12 @@ const Categories: React.FC = () => {
             fetchCategories();
             alert('Categoria salva com sucesso!');
         } catch (error) {
-            setError('Erro ao adicionar/editar a categoria.');
+            // Verifica se o erro é uma instância de Error
+            if (error instanceof Error) {
+                setError(error.message || 'Erro ao adicionar/editar a categoria.');
+            } else {
+                setError('Erro desconhecido ao adicionar/editar a categoria.');
+            }
         }
     };
 

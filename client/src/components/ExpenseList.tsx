@@ -5,7 +5,6 @@ interface Expense {
     category: string;
     subcategory: string;
     amount: number;
-    date?: string; // Pode ser opcional se não usar data
 }
 
 interface ExpenseListProps {

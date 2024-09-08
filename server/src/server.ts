@@ -1,15 +1,74 @@
-import mongoose from 'mongoose';
-import app from './app';
+import express, { Request, Response } from 'express';
+import cors from 'cors';
+import bodyParser from 'body-parser';
 
-// Conectar ao MongoDB
-const MONGO_URI = 'mongodb://localhost:27017/budget-app';
+const app = express();
+app.use(cors());
+app.use(bodyParser.json());
 
-mongoose.connect(MONGO_URI)
-    .then(() => {
-        app.listen(5000, () => {
-            console.log('Servidor rodando na porta 5000');
-        });
-    })
-    .catch((error) => {
-        console.error('Erro ao conectar ao MongoDB:', error);
-    });
+let categories: string[] = [];
+
+// Rota para buscar categorias
+app.get('/categories', (req: Request, res: Response) => {
+    res.json(categories);
+});
+
+// Rota para adicionar ou editar categorias
+app.post('/categories', (req: Request, res: Response) => {
+    const { name } = req.body;
+    if (!name) {
+        return res.status(400).json({ error: 'O nome da categoria é obrigatório.' });
+    }
+
+    if (!categories.includes(name)) {
+        categories.push(name);
+    }
+    res.json({ name });
+});
+
+app.put('/categories/:name', (req: Request, res: Response) => {
+    const { name } = req.params;
+    const { newName } = req.body;
+
+    if (!newName || !name) {
+        return res.status(400).json({ error: 'Nome da categoria inválido.' });
+    }
+
+    const index = categories.indexOf(name);
+    if (index !== -1) {
+        categories[index] = newName;
+        res.json({ name: newName });
+    } else {
+        res.status(404).json({ error: 'Categoria não encontrada.' });
+    }
+});
+
+// Rota para editar categorias
+app.put('/categories/:name', (req: Request, res: Response) => {
+    const { name } = req.params;
+    const { newName } = req.body;  // Certifique-se de que o campo enviado é 'newName'
+
+    if (!newName || !name) {
+        return res.status(400).json({ error: 'Nome da categoria inválido.' });
+    }
+
+    const index = categories.indexOf(name);
+    if (index !== -1) {
+        categories[index] = newName;
+        res.json({ name: newName });
+    } else {
+        res.status(404).json({ error: 'Categoria não encontrada.' });
+    }
+});
+
+// Rota para deletar uma categoria
+app.delete('/categories/:name', (req: Request, res: Response) => {
+    const { name } = req.params;
+    categories = categories.filter(category => category !== name);
+    res.sendStatus(204);
+});
+
+const PORT = 5000;
+app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+});
